@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Calculator</title>
+</head>
+<body>
+    <div class="main">
+        <h1>Calculator</h1>
+        <input type="text" placeholder="Enter expression here" id="inp-expr">
+        <button class="btn" value="=" onclick="eval()" id="btn">=</button>
+        <br>
+
+        <h3 id="result">Result : 0</h3>
+    </div>
+    <script>
+        class Stack {
+            constructor(){
+                this.data = [];
+                this.top = 0;
+            }
+            push(element) {
+                this.data[this.top] = element;
+                this.top = this.top + 1;
+            }
+            length() {
+                return this.top;
+            }
+            peek() {
+               return this.data[this.top -1 ];
+            }
+            pop() {
+                if( this.length()>0 ) {
+                this.top = this.top -1;
+                return this.data.pop(); // removes the last element
+                }
+            }
+            print() {
+                var top = this.top - 1; // because top points to index where new    element to be inserted
+                var strng = "";
+                while(top >= 0) { // print upto 0th index
+                    strng += this.data[top] + " ";
+                    top--;
+                }
+                console.log(strng);
+            }
+
+        }
+        function precedence(op){
+            if(op === '+'||op === '-')
+                return 1;
+            if(op === '*'||op === '/')
+                return 2;
+            return 0;
+        }
+
+        function applyOp(a,b,op){
+            switch(op){
+                case '+': return a+b;
+                case '-': return a - b;
+                case '*': return a * b;
+                case '/': return a / b;
+            }
+        }
+        function eval(){
+            let result = document.getElementById("result");
+            let expr = document.getElementById("inp-expr").value;
+            let ans = "";
+
+            let values= new Stack();
+            let ops = new Stack();
+
+            // let values = [];
+            // let ops = [];
+            let i = 0;
+            expr = expr.replaceAll(" ","");
+            console.log(expr);
+            while(i<expr.length){
+                
+                console.log(expr[i]);
+                if(expr[i]==' '){
+                    continue;
+                }
+                else if(expr[i]=='('){
+                    console.log(expr[i] + "yaha (");
+                    ops.push(expr[i]);
+                }
+                else if (expr[i] >= '0' && expr[i] <= '9'){
+                    console.log(expr[i] + "yaha digit");
+                    let val = 0;
+                    while(i<expr.length && (expr[i] >= '0' && expr[i] <= '9')){
+                        val = (val*10) + parseInt(expr[i]);
+                        i+=1;
+                    }
+                    i-=1;
+                    values.push(val);
+                }
+                else if(expr[i]==')'){
+                    console.log(expr[i] + "yaha )");
+                    while(ops.length()!=0 && ops.peek()!='('){
+                        let val2 = values.peek();
+                        values.pop();
+                        let val1 = values.peek();
+                        values.pop();
+                        let op = ops.peek();
+                        ops.pop();
+                        console.log("result " +val1 + " " + val2 + " " + op + " " + applyOp(val1,val2,op));
+                        values.push(applyOp(val1,val2,op));
+                    }
+                    if(ops.length()>0)
+                        ops.pop();
+                }
+                else{
+                    console.log(expr[i] + "yaha +-*/");
+                    while(ops.length()>0  && precedence(ops.peek()) >= precedence(expr[i])){
+                        let val2 = values.peek();
+                        values.pop();
+                        let val1 = values.peek();
+                        values.pop();
+                        let op = ops.peek();
+                        ops.pop();
+
+                        values.push(applyOp(val1,val2,op));
+                    }
+                    console.log("yeyeye" + expr[i]);
+                    ops.push(expr[i]);
+                }
+                i+=1;
+                console.log("values ");
+                values.print();
+                console.log("ops ");
+                ops.print();
+                
+            }
+            while(ops.length()>0){
+                let val2 = values.peek();
+                values.pop();
+                let val1 = values.peek();
+                values.pop();
+                let op = ops.peek();
+                ops.pop();
+
+                values.push(applyOp(val1,val2,op));
+            }
+            
+            ans = values.peek();
+            result.innerHTML="Result : "+ans;
+
+
+        }
+    </script>
+</body>
+</html>

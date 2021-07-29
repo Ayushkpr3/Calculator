@@ -1,0 +1,23 @@
+.main{
+    text-align: center;
+    border: 2px solid;
+    width: 50vw;
+    margin: 100px auto;
+    background-color: azure;
+}
+
+#inp-expr{
+    width: 25rem;
+    height: 20px;
+    background-color: rgb(245, 235, 235)
+}
+
+#btn{
+    width: 2rem;
+    height: 25px;
+    background-color: rgb(245, 235, 235)
+}
+
+#btn:active{
+    transform: scale(0.8);    
+}
